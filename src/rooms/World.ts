@@ -7,8 +7,6 @@ import { WorldState } from "../schema/WorldState";
 export class World extends Room<WorldState> {
   private fixedTimeStep = 1000 / 50; // 50fps
   private currentTick = 0;
-  private movementCheckInterval = 250; // Check every 0.25 seconds (250 milliseconds)
-  private movementCheckElapsed = 0; // Time elapsed since last movement check
 
   onCreate(options: any) {
     this.setState(new WorldState());
@@ -42,7 +40,6 @@ export class World extends Room<WorldState> {
      * @memberof WorldRoom
      */
   fixedUpdate(deltaTime: number) {
-    this.movementCheckElapsed += deltaTime;
 
     this.state.players.forEach(player => {
       let input: InputData | undefined;
@@ -59,19 +56,11 @@ export class World extends Room<WorldState> {
 
         player.position.x += lastPositionChangeX;
         player.position.y += lastPositionChangeY;
-      }
 
-      if (this.movementCheckElapsed >= this.movementCheckInterval) {
         player.isMoving = lastPositionChangeX != 0 || lastPositionChangeY != 0;
-        player.isRunning = player.speed > player.baseSpeed;
+        player.isRunning = input.isRunning
       }
     });
-
-    if (this.movementCheckElapsed >= this.movementCheckInterval) {
-      // Reset the counter after updating isMoving and isRunning
-      //console.log(player.isMoving, player.isRunning);
-      this.movementCheckElapsed = 0;
-    }
 
     this.currentTick++;
   }
