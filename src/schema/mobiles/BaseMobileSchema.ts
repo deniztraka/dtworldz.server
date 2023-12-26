@@ -5,7 +5,9 @@ export abstract class BaseMobileSchema extends Schema {
     @type("string") name: string = "";
     @type("number") speed: number;
     @type("boolean") isRunning: boolean;
+    @type("boolean") isMoving: boolean;
     @type(Position) position: Position;
+    lastPosition: Position;
     // @type("number") health: number;
     // @type("number") energy: number;
     // @type("number") dexterity: number;
@@ -19,6 +21,7 @@ export abstract class BaseMobileSchema extends Schema {
         this.name = name;
         this.speed = this.baseSpeed; // 1 = 1 tile per second
         this.position = new Position(x,y);
+        this.lastPosition = this.position;
         this.isRunning = false;
     }
 }

@@ -40,27 +40,34 @@ export class World extends Room<WorldState> {
      * @memberof WorldRoom
      */
   fixedUpdate(deltaTime: number) {
-    // const ticksPerSecond = 1000 / timeStep; // Calculate how many ticks are there in one second
-    // console.log(deltaTime)
     this.state.players.forEach(player => {
-        let input: InputData;
-        
-       
-        // Dequeue player inputs
-        while (input = player.inputQueue.shift()) {
-            player.tick = input.tick;
-            //console.log(input)
-            player.speed = input.isRunning ? player.baseSpeed + 2 : player.baseSpeed;
+      let input: InputData | undefined;
+      var lastPositionChangeX = 0;
+      var lastPositionChangeY = 0;
 
-            player.position.x += (input.horizontal * player.speed * deltaTime / 1000);
-            player.position.y += (input.vertical * player.speed * deltaTime / 1000);
-        }
+      while (input = player.inputQueue.shift()) {
+        //console.log(`Input - Horizontal: ${input.horizontal}, Vertical: ${input.vertical}, isRunning: ${input.isRunning}`);
+        player.tick = input.tick;
+        player.speed = input.isRunning ? player.baseSpeed + 2 : player.baseSpeed;
 
-        // console.log(player.position.x, player.position.y)
+        lastPositionChangeX = (input.horizontal * player.speed * deltaTime / 1000);
+        lastPositionChangeY = (input.vertical * player.speed * deltaTime / 1000);
+
+        //console.log(positionChangeX, positionChangeY)
+        player.position.x += lastPositionChangeX;
+        player.position.y += lastPositionChangeY;
+      }
+
+
+      player.isMoving = lastPositionChangeX != 0 || lastPositionChangeY != 0;
+      player.isRunning = player.speed > player.baseSpeed;
+      
+      console.log(player.isMoving, player.isRunning)
     });
 
     this.currentTick++;
-}
+  }
+
 
 
 
