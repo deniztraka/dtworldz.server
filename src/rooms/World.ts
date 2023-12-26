@@ -62,7 +62,7 @@ export class World extends Room<WorldState> {
       player.isMoving = lastPositionChangeX != 0 || lastPositionChangeY != 0;
       player.isRunning = player.speed > player.baseSpeed;
       
-      console.log(player.isMoving, player.isRunning)
+      //console.log(player.isMoving, player.isRunning)
     });
 
     this.currentTick++;
