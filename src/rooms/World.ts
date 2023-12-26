@@ -1,16 +1,22 @@
 import { Room, Client } from "@colyseus/core";
 import { PlayerSchema } from "../schema/mobiles/PlayerSchema";
-import { InputData } from "../interfaces/InputData";
+import { ClientInputData } from "../interfaces/ClientInputData";
 import { WorldState } from "../schema/WorldState";
-
-
+import { ActionHandler } from "../engines/actionHandler/ActionHandler";
+import { ActionFactory } from "../engines/actionHandler/factories/ActionFactory";
 export class World extends Room<WorldState> {
   private fixedTimeStep = 1000 / 50; // 50fps
   private currentTick = 0;
+  actionHandler: ActionHandler;
+  actionFactory: ActionFactory;
 
   onCreate(options: any) {
     this.setState(new WorldState());
+    this.actionHandler = new ActionHandler(this);
+    this.actionFactory = new ActionFactory();
     this.maxClients = 5;
+
+    this.attachGameEvents();
 
     // handle player input
     this.onMessage("move", (client, input) => {
@@ -33,35 +39,28 @@ export class World extends Room<WorldState> {
     });
   }
 
-  /**
-     * This method is called on every fixed time step.
-     *
-     * @param {number} deltaTime
-     * @memberof WorldRoom
-     */
+  attachGameEvents() {
+    this.onMessage("ca_action", (client, input) => {
+      const player = this.state.players.get(client.sessionId);
+      if (!player) return;
+      //console.log(input)
+      player.inputQueue.push(input);
+    });
+
+  }
+
   fixedUpdate(deltaTime: number) {
 
     this.state.players.forEach(player => {
-      let input: InputData | undefined;
-      var lastPositionChangeX = 0;
-      var lastPositionChangeY = 0;
+      let input: ClientInputData | undefined;
 
       while (input = player.inputQueue.shift()) {
-        //console.log(`Input - Horizontal: ${input.horizontal}, Vertical: ${input.vertical}, isRunning: ${input.isRunning}`);
-        player.tick = input.tick;
-        player.speed = input.isRunning ? player.baseSpeed + 2 : player.baseSpeed;
-
-        lastPositionChangeX = (input.horizontal * player.speed * deltaTime / 1000);
-        lastPositionChangeY = (input.vertical * player.speed * deltaTime / 1000);
-
-        player.position.x += lastPositionChangeX;
-        player.position.y += lastPositionChangeY;
-
-        player.isMoving = lastPositionChangeX != 0 || lastPositionChangeY != 0;
-        player.isRunning = input.isRunning
+        var action = ActionFactory.create(player, input);
+        this.actionHandler.handle(action);
       }
     });
 
+    this.actionHandler.update(deltaTime);
     this.currentTick++;
   }
 
