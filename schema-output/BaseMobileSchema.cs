@@ -11,26 +11,41 @@ using Action = System.Action;
 namespace DTWorldz.Networking.ServerSchema {
 	public partial class BaseMobileSchema : Schema {
 		[Type(0, "string")]
+		public string sessionId = default(string);
+
+		[Type(1, "string")]
 		public string name = default(string);
 
-		[Type(1, "number")]
+		[Type(2, "number")]
 		public float speed = default(float);
 
-		[Type(2, "boolean")]
+		[Type(3, "boolean")]
 		public bool isRunning = default(bool);
 
-		[Type(3, "boolean")]
+		[Type(4, "boolean")]
 		public bool isMoving = default(bool);
 
-		[Type(4, "ref", typeof(Position))]
+		[Type(5, "ref", typeof(Position))]
 		public Position position = new Position();
 
-		[Type(5, "number")]
+		[Type(6, "number")]
 		public float tick = default(float);
 
 		/*
 		 * Support for individual property change callbacks below...
 		 */
+
+		protected event PropertyChangeHandler<string> __sessionIdChange;
+		public Action OnSessionIdChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.sessionId));
+			__sessionIdChange += __handler;
+			if (__immediate && this.sessionId != default(string)) { __handler(this.sessionId, default(string)); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(sessionId));
+				__sessionIdChange -= __handler;
+			};
+		}
 
 		protected event PropertyChangeHandler<string> __nameChange;
 		public Action OnNameChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
@@ -106,6 +121,7 @@ namespace DTWorldz.Networking.ServerSchema {
 
 		protected override void TriggerFieldChange(DataChange change) {
 			switch (change.Field) {
+				case nameof(sessionId): __sessionIdChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				case nameof(name): __nameChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				case nameof(speed): __speedChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				case nameof(isRunning): __isRunningChange?.Invoke((bool) change.Value, (bool) change.PreviousValue); break;

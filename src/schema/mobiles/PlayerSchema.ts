@@ -9,8 +9,8 @@ export class PlayerSchema extends BaseMobileSchema {
     inputQueue: ClientInputData[];
     lastMoveTick: number = 0;
     
-    constructor(client: Client, name = "") {
-        super(name);
+    constructor(client: Client, name = "", x = 10, y = 10) {
+        super(client.sessionId, name, x, y);
         this.client = client;
         this.inputQueue = [];
     }

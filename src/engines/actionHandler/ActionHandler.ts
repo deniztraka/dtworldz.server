@@ -16,6 +16,8 @@ export class ActionHandler {
             this.atomicActions.push(action);
         } else if (action instanceof BaseOngoingAction) {
             this.ongoingActions.push(action);
+        } else {
+            console.log("Unknown action type")
         }
     }
 
