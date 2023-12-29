@@ -28,7 +28,10 @@ namespace DTWorldz.Networking.ServerSchema {
 		[Type(5, "ref", typeof(Position))]
 		public Position position = new Position();
 
-		[Type(6, "number")]
+		[Type(6, "string")]
+		public string target = default(string);
+
+		[Type(7, "number")]
 		public float tick = default(float);
 
 		/*
@@ -107,6 +110,18 @@ namespace DTWorldz.Networking.ServerSchema {
 			};
 		}
 
+		protected event PropertyChangeHandler<string> __targetChange;
+		public Action OnTargetChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.target));
+			__targetChange += __handler;
+			if (__immediate && this.target != default(string)) { __handler(this.target, default(string)); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(target));
+				__targetChange -= __handler;
+			};
+		}
+
 		protected event PropertyChangeHandler<float> __tickChange;
 		public Action OnTickChange(PropertyChangeHandler<float> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
@@ -127,6 +142,7 @@ namespace DTWorldz.Networking.ServerSchema {
 				case nameof(isRunning): __isRunningChange?.Invoke((bool) change.Value, (bool) change.PreviousValue); break;
 				case nameof(isMoving): __isMovingChange?.Invoke((bool) change.Value, (bool) change.PreviousValue); break;
 				case nameof(position): __positionChange?.Invoke((Position) change.Value, (Position) change.PreviousValue); break;
+				case nameof(target): __targetChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				case nameof(tick): __tickChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				default: break;
 			}
