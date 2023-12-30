@@ -34,6 +34,12 @@ export class World extends Room<WorldState> {
   fixedUpdate(deltaTime: number) {
     this.handleClientActions();
     this.actionHandler.update(deltaTime);
+
+    // process update for each player
+    this.state.players.forEach(player => {
+      player.update(deltaTime);
+    });
+
     this.currentTick++;
 
     //console.log(this.state.spatialGrid.getObjectsInCell(10,10).length);
@@ -64,7 +70,7 @@ export class World extends Room<WorldState> {
   onJoin(client: Client, options: { name: string }, _auth: any) {
     console.log(`${client.sessionId} | ${options.name} is joined!`);
     const player = new PlayerSchema(client, options.name);
-    //this.state.spatialGrid.addObjectToGrid(player);
+    this.state.spatialGrid.addObjectToGrid(player);
     // add player to the state
     this.state.players.set(client.sessionId, player);
   }
@@ -72,7 +78,7 @@ export class World extends Room<WorldState> {
   onLeave(client: Client, consented: boolean) {
     // console.log(client.sessionId, "left!");
     if (this.state.players.has(client.sessionId)) {
-      //this.state.spatialGrid.removeObjectFromGrid({ sessionId: client.sessionId, position: this.state.players.get(client.sessionId).position } as ITransform);
+      this.state.spatialGrid.removeObjectFromGrid({ sessionId: client.sessionId, position: this.state.players.get(client.sessionId).position } as ITransform);
       console.log(client.sessionId + " | " + this.state.players.get(client.sessionId).name + " is left");
       this.state.players.delete(client.sessionId);
     }

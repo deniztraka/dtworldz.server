@@ -31,8 +31,26 @@ namespace DTWorldz.Networking.ServerSchema {
 		[Type(6, "string")]
 		public string target = default(string);
 
-		[Type(7, "number")]
+		[Type(7, "ref", typeof(Health))]
+		public Health health = new Health();
+
+		[Type(8, "ref", typeof(Energy))]
+		public Energy energy = new Energy();
+
+		[Type(9, "number")]
+		public float dexterity = default(float);
+
+		[Type(10, "number")]
+		public float strength = default(float);
+
+		[Type(11, "number")]
+		public float intelligence = default(float);
+
+		[Type(12, "number")]
 		public float tick = default(float);
+
+		[Type(13, "number")]
+		public float _direction = default(float);
 
 		/*
 		 * Support for individual property change callbacks below...
@@ -122,6 +140,66 @@ namespace DTWorldz.Networking.ServerSchema {
 			};
 		}
 
+		protected event PropertyChangeHandler<Health> __healthChange;
+		public Action OnHealthChange(PropertyChangeHandler<Health> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.health));
+			__healthChange += __handler;
+			if (__immediate && this.health != null) { __handler(this.health, null); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(health));
+				__healthChange -= __handler;
+			};
+		}
+
+		protected event PropertyChangeHandler<Energy> __energyChange;
+		public Action OnEnergyChange(PropertyChangeHandler<Energy> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.energy));
+			__energyChange += __handler;
+			if (__immediate && this.energy != null) { __handler(this.energy, null); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(energy));
+				__energyChange -= __handler;
+			};
+		}
+
+		protected event PropertyChangeHandler<float> __dexterityChange;
+		public Action OnDexterityChange(PropertyChangeHandler<float> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.dexterity));
+			__dexterityChange += __handler;
+			if (__immediate && this.dexterity != default(float)) { __handler(this.dexterity, default(float)); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(dexterity));
+				__dexterityChange -= __handler;
+			};
+		}
+
+		protected event PropertyChangeHandler<float> __strengthChange;
+		public Action OnStrengthChange(PropertyChangeHandler<float> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.strength));
+			__strengthChange += __handler;
+			if (__immediate && this.strength != default(float)) { __handler(this.strength, default(float)); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(strength));
+				__strengthChange -= __handler;
+			};
+		}
+
+		protected event PropertyChangeHandler<float> __intelligenceChange;
+		public Action OnIntelligenceChange(PropertyChangeHandler<float> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.intelligence));
+			__intelligenceChange += __handler;
+			if (__immediate && this.intelligence != default(float)) { __handler(this.intelligence, default(float)); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(intelligence));
+				__intelligenceChange -= __handler;
+			};
+		}
+
 		protected event PropertyChangeHandler<float> __tickChange;
 		public Action OnTickChange(PropertyChangeHandler<float> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
@@ -134,6 +212,18 @@ namespace DTWorldz.Networking.ServerSchema {
 			};
 		}
 
+		protected event PropertyChangeHandler<float> ___directionChange;
+		public Action On_directionChange(PropertyChangeHandler<float> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this._direction));
+			___directionChange += __handler;
+			if (__immediate && this._direction != default(float)) { __handler(this._direction, default(float)); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(_direction));
+				___directionChange -= __handler;
+			};
+		}
+
 		protected override void TriggerFieldChange(DataChange change) {
 			switch (change.Field) {
 				case nameof(sessionId): __sessionIdChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
@@ -143,7 +233,13 @@ namespace DTWorldz.Networking.ServerSchema {
 				case nameof(isMoving): __isMovingChange?.Invoke((bool) change.Value, (bool) change.PreviousValue); break;
 				case nameof(position): __positionChange?.Invoke((Position) change.Value, (Position) change.PreviousValue); break;
 				case nameof(target): __targetChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
+				case nameof(health): __healthChange?.Invoke((Health) change.Value, (Health) change.PreviousValue); break;
+				case nameof(energy): __energyChange?.Invoke((Energy) change.Value, (Energy) change.PreviousValue); break;
+				case nameof(dexterity): __dexterityChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
+				case nameof(strength): __strengthChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
+				case nameof(intelligence): __intelligenceChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				case nameof(tick): __tickChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
+				case nameof(_direction): ___directionChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				default: break;
 			}
 		}

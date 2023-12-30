@@ -1,4 +1,4 @@
-import { Position } from "../schema/Position";
+import { Position } from "../schema/components/Position";
 
 export interface ITransform {
     position: Position;

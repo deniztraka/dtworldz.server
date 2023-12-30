@@ -1,5 +1,5 @@
 import { World } from "../../../../rooms/World";
-import { Position } from "../../../../schema/Position";
+import { Position } from "../../../../schema/components/Position";
 import { BaseMobileSchema } from "../../../../schema/mobiles/BaseMobileSchema";
 import { BaseAtomicAction } from "../BaseAtomicAction";
 

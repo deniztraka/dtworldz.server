@@ -1,5 +1,6 @@
 import { World } from "../../../../rooms/World";
 import { BaseMobileSchema } from "../../../../schema/mobiles/BaseMobileSchema";
+import { MovementUtils } from "../../../../utils/MovementUtils";
 import { BaseAtomicAction } from "../BaseAtomicAction";
 
 export class AttackAction extends BaseAtomicAction {
@@ -30,9 +31,14 @@ export class AttackAction extends BaseAtomicAction {
             return;
         }
 
-        // attack to target
-        this.mobile.attack(target);
+        console.log("DirectionBeforeAttack: " + this.mobile.direction);
+        this.mobile.direction = MovementUtils.getDirectionToTarget(this.mobile.position, target.position);
+        console.log("DirectionAfterAttack: " + this.mobile.direction);
 
+        // attack to target
+        this.mobile.tryTakeDamage(target);
+
+        // we dont check collision for player attacks for now
         //world.state.spatialGrid.checkCollision(this.mobile, collisionCallback.bind(this));
     }
 }
