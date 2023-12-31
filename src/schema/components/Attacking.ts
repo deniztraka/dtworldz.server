@@ -8,7 +8,7 @@ export class Attacking extends Schema {
     @type("number") cooldownTimer: number;
     @type("boolean") isAttacking: boolean;
 
-    constructor(power = 1, swingSpeed = 1, range = 1) {
+    constructor(power = 1, swingSpeed = 0.5, range = 1) {
         super();
         this.power = power;
         this.swingSpeed = swingSpeed;
