@@ -52,6 +52,9 @@ namespace DTWorldz.Networking.ServerSchema {
 		[Type(13, "number")]
 		public float _direction = default(float);
 
+		[Type(14, "ref", typeof(Attacking))]
+		public Attacking attacking = new Attacking();
+
 		/*
 		 * Support for individual property change callbacks below...
 		 */
@@ -224,6 +227,18 @@ namespace DTWorldz.Networking.ServerSchema {
 			};
 		}
 
+		protected event PropertyChangeHandler<Attacking> __attackingChange;
+		public Action OnAttackingChange(PropertyChangeHandler<Attacking> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.attacking));
+			__attackingChange += __handler;
+			if (__immediate && this.attacking != null) { __handler(this.attacking, null); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(attacking));
+				__attackingChange -= __handler;
+			};
+		}
+
 		protected override void TriggerFieldChange(DataChange change) {
 			switch (change.Field) {
 				case nameof(sessionId): __sessionIdChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
@@ -240,6 +255,7 @@ namespace DTWorldz.Networking.ServerSchema {
 				case nameof(intelligence): __intelligenceChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				case nameof(tick): __tickChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				case nameof(_direction): ___directionChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
+				case nameof(attacking): __attackingChange?.Invoke((Attacking) change.Value, (Attacking) change.PreviousValue); break;
 				default: break;
 			}
 		}
